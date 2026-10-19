@@ -5,11 +5,7 @@ fun main(){
     println(formatearSaludo("María", tratamiento = "Profe", entusiasta =true))
 }
 
-fun formatearSaludo(
-    nombre: String,
-    tratamiento: String = "Sr./Sra.",
-    entusiasta: Boolean = false
-): String {
+fun formatearSaludo(nombre: String, tratamiento: String = "Sr./Sra.", entusiasta: Boolean = false): String {
     var saludo: String = ""
     if(entusiasta == true) {
         saludo = "¡¡¡Hola, $tratamiento $nombre !!!"
