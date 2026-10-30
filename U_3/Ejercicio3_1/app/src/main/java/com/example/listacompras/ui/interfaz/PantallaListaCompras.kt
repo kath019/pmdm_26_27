@@ -87,6 +87,20 @@ fun PantallaListaCompras() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            if (productos.isNotEmpty()) {
+
+                val cantidadComprada = productos.count { producto ->
+                    producto.comprado
+                }
+
+                Text(//.size devuelve el total de productos que hay en la lista
+                    text = "$cantidadComprada de ${productos.size} productos comprados",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             //comprueba si hay productos comprados -> aparece botón
             if (productos.any { it.comprado }) {
                 androidx.compose.material3.Button(
@@ -111,7 +125,7 @@ fun PantallaListaCompras() {
                     productos = productos,
                     onCambiarCompra = {productoSeleccionado ->
 
-                        //recorrer los producto y crear una nueva lista a partir de ellos
+                        //recorrer los productos y crear una nueva lista a partir de ellos
                         productos = productos.map { producto ->
 
                             //identifica el producto seleccionado
@@ -140,7 +154,7 @@ fun PantallaListaCompras() {
         }
     }
 
-    //comprieba si hay alhún producto seleccionado para editar y muestra el diálogo
+    //comprueba si hay algún producto seleccionado para editar y muestra el diálogo
     if (productoEnEdicion != null) {
 
         DialogoEdicion(
