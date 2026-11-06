@@ -8,6 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.multipantalla_con_navegacion.listado.PantallaListado
+import com.example.multipantalla_con_navegacion.model.recetasIniciales
+import com.example.multipantalla_con_navegacion.ui.detalle.PantallaDetalle
+import com.example.multipantalla_con_navegacion.ui.formulario.PantallaFormulario
 
 object Rutas {
     const val LISTADO = "listado"
@@ -37,11 +40,19 @@ fun AppNavigation() {
                 }
             )
         ) { backStackEntry -> val id = backStackEntry.arguments?.getInt("recetaId")
-            Text("Detalle de la receta: $id")
+
+            val receta = recetasIniciales.find { it.id== id }
+
+            if (receta != null) {
+                PantallaDetalle(
+                    receta= receta,
+                    navController= navController
+                )
+            }
         }
 
         composable(Rutas.CREAR) {
-            Text("Crear receta")
+            PantallaFormulario(navController)
         }
 
         composable(route = Rutas.EDITAR, arguments = listOf(

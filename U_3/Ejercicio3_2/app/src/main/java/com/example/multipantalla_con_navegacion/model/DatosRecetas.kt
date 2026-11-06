@@ -1,6 +1,8 @@
 package com.example.multipantalla_con_navegacion.model
 
-val recetasIniciales = listOf(
+import androidx.compose.runtime.mutableStateListOf
+
+val recetasIniciales = mutableStateListOf(
     Receta(
         id = 1,
         nombre = "Tortilla española",
