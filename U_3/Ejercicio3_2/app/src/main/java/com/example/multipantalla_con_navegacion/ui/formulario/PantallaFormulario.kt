@@ -28,24 +28,79 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.multipantalla_con_navegacion.model.Receta
+import com.example.multipantalla_con_navegacion.model.recetasIniciales
 
 @OptIn(ExperimentalMaterial3Api ::class)
 @Composable
-fun PantallaFormulario(navController: NavController) {
-    var nombre by remember{ mutableStateOf("") }
-    var tiempo by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("Principal") }
-    var dificultad by remember { mutableStateOf("Fácil") }
+//el formulario puede recibir una receta para editarla
+fun PantallaFormulario(navController: NavController, receta: Receta? =null) {
+    var nombre by remember(receta){
+        mutableStateOf(receta?.nombre ?: "") }
+    var tiempo by remember(receta) {
+        mutableStateOf(receta?.tiempoMinutos?.toString() ?: "")}
+    var categoria by remember(receta) {
+        mutableStateOf(receta?.categoria ?: "Principal")}
+    var dificultad by remember(receta) {
+        mutableStateOf(receta?.dificultad ?: "Fácil") }
+
     var nuevoIngrediente by remember { mutableStateOf("")}
-    var ingredientes = remember { mutableStateListOf<String>() }
+    val ingredientes = remember(receta) {
+        mutableStateListOf<String>().apply {
+            addAll(receta?.ingredientes ?: emptyList())
+        }
+    }
     var nuevoPaso by remember { mutableStateOf("") }
-    var pasos = remember { mutableStateListOf<String>() }
+    val pasos = remember(receta) {
+        mutableStateListOf<String>().apply {
+            addAll(receta?.pasos ?: emptyList()) }}
+    var mensajeError by remember {mutableStateOf("")}
 
     Scaffold(
         topBar = {
-            TopAppBar(title ={ Text("Nueva receta")},
+            TopAppBar(
+                title ={Text(if (receta == null) "Nueva receta" else "Editar receta") },
                 navigationIcon = { TextButton(onClick = {navController.popBackStack()}) {Text("X")}},
-                actions = {TextButton(onClick = {"..."}) {Text("Guardar")}}
+                actions = {TextButton(onClick = {
+                    //comprobar que el tiempo sea un numero
+                    val tiempoNumero=tiempo.toIntOrNull()
+                    if(nombre.isBlank() || tiempoNumero ==null || tiempoNumero <= 0 ||ingredientes.isEmpty() || pasos.isEmpty()){
+                        mensajeError = "Completa todos los campos, añade ingredientes y pasos"
+
+                    } else {
+                        if(receta == null){
+                            //Se crea la nueva receta
+                            val nuevaReceta = Receta(
+                                id = (recetasIniciales.maxOfOrNull { it.id } ?: 0) +1,
+                                nombre = nombre,
+                                categoria = categoria,
+                                tiempoMinutos=tiempoNumero,
+                                dificultad= dificultad,
+                                ingredientes = ingredientes.toList(),
+                                pasos = pasos.toList()
+                            )
+                            recetasIniciales.add(nuevaReceta)
+
+                        } else {
+                            //editar una receta que ya existe
+                            val indice = recetasIniciales.indexOfFirst { it.id == receta.id }
+
+                            if (indice != -1) {
+                                recetasIniciales[indice] = receta.copy(
+                                    nombre = nombre,
+                                    categoria = categoria,
+                                    tiempoMinutos = tiempoNumero,
+                                    dificultad = dificultad,
+                                    ingredientes = ingredientes.toList(),
+                                    pasos = pasos.toList()
+                                )
+                            }
+                        }
+
+                        //volver a la pagina anterior
+                        navController.popBackStack()
+                    }
+                }) {Text("Guardar")}}
             )
         }
     ) { padding ->
@@ -88,6 +143,10 @@ fun PantallaFormulario(navController: NavController) {
                         label = {Text(dificultadActual)}
                     )
                 }
+            }
+
+            if(mensajeError.isNotEmpty()) {
+                Text(text = mensajeError, color = MaterialTheme.colorScheme.error)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -164,4 +223,3 @@ fun PantallaFormulario(navController: NavController) {
         }
     }
 }
-/*  */

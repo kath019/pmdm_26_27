@@ -34,13 +34,14 @@ fun AppNavigation() {
             PantallaListado(navController)
         }
 
-        composable(route = Rutas.DETALLE, arguments = listOf(
+        composable(route = Rutas.DETALLE,
+            arguments = listOf(
             navArgument("recetaId") {
                     type = NavType.IntType
                 }
             )
-        ) { backStackEntry -> val id = backStackEntry.arguments?.getInt("recetaId")
-
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("recetaId")
             val receta = recetasIniciales.find { it.id== id }
 
             if (receta != null) {
@@ -55,12 +56,17 @@ fun AppNavigation() {
             PantallaFormulario(navController)
         }
 
-        composable(route = Rutas.EDITAR, arguments = listOf(
-                navArgument("recetaId") {
+        composable(route = Rutas.EDITAR,
+            arguments = listOf(navArgument("recetaId") {
                     type = NavType.IntType
                 }
             )
-        ) { backStackEntry -> val id = backStackEntry.arguments?.getInt("recetaId")
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("recetaId")
+            val receta = recetasIniciales.find{it.id == id}
+            if(receta != null){
+                PantallaFormulario(navController = navController, receta=receta)
+            }
             Text("Editar receta: $id")
         }
     }
